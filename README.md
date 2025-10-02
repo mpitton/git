@@ -24,7 +24,7 @@ Time series visualiser of activity data.
     https://www.strava.com/api/v3/segments/explore?bounds=-37.5,141.0,-28.0,153.7&activity_type=riding&min_cat=3&max_cat=3
 
 ### Deep dives on individual activities
-Low prio, we currently link to activities in Strava.
+Use Streams endpoint. Low prio, we currently link to activities in Strava.
 
 # Drafted prompts
 
