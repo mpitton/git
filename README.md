@@ -19,13 +19,15 @@ API calling
 
 Local climbs (eg. NSW cat3 climbs)
     
-    Curl:
+    Curl
+    
     curl -X 'GET' \
     'https://www.strava.com/api/v3/segments/explore?bounds=-37.5,141.0,-28.0,153.7&activity_type=riding&min_cat=3&max_cat=3' \
     -H 'accept: application/json' \
     -H 'authorization: Bearer ef3af48341c443da1e0e85e3d27406388edc5e8d'
 
-    Request URL:
+    Request URL
+    
     https://www.strava.com/api/v3/segments/explore?bounds=-37.5,141.0,-28.0,153.7&activity_type=riding&min_cat=3&max_cat=3
 
 Deep dives on individual activities
