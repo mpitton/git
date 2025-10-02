@@ -18,6 +18,7 @@ API calling
     loading animation
 
 Local climbs (eg. NSW cat3 climbs)
+    
     Curl:
     curl -X 'GET' \
     'https://www.strava.com/api/v3/segments/explore?bounds=-37.5,141.0,-28.0,153.7&activity_type=riding&min_cat=3&max_cat=3' \
