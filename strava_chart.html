@@ -78,6 +78,57 @@
             flex-direction: column;
             color: #666;
         }
+        .location-table-container {
+            margin-top: 24px;
+        }
+        .location-table-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        .location-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        .location-table thead {
+            background: linear-gradient(135deg, #fc4c02 0%, #e04302 100%);
+            color: #fff;
+        }
+        .location-table th {
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        .location-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        .location-table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .location-table tbody tr:hover {
+            background-color: #e8f4f8;
+            cursor: pointer;
+        }
+        .location-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+        .location-table td:first-child {
+            font-weight: 500;
+            color: #333;
+        }
+        .location-table td:last-child {
+            font-weight: 600;
+            color: #fc4c02;
+        }
     </style>
 </head>
 <body>
@@ -92,6 +143,7 @@
         <div id="distanceElevationControls" class="legend-toggles"></div>
         <canvas id="heartRateChart" style="margin-top: 24px;"></canvas>
         <div id="heartRateControls" class="legend-toggles"></div>
+        <div id="locationChart" style="margin-top: 24px;"></div>
         <div id="comingSoon" class="coming-soon" aria-hidden="true">
             <svg width="96" height="96" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path d="M12 2L2 7l10 5 10-5-10-5Zm0 7L2 4v13l10 5 10-5V4l-10 5Z" fill="#e0e0e0"/>
@@ -208,6 +260,24 @@
                 if (hours > 0 && mins > 0) return `${hours}hrs ${mins}mins`;
                 if (hours > 0) return `${hours}hrs`;
                 return `${mins}mins`;
+            }
+
+            // Helper to format timezone to simplified location
+            function formatTimezone(tz) {
+                if (!tz || typeof tz !== 'string') return 'Unknown';
+                // Extract the location part after GMT offset
+                const match = tz.match(/\(.*?\)\s*(.+)/);
+                if (!match) return tz;
+                const location = match[1];
+                // Split by '/' and format as "City, Country"
+                // Note: timezone format is "Country/City" so we need to swap
+                const parts = location.split('/');
+                if (parts.length === 2) {
+                    const country = parts[0].replace(/_/g, ' ');
+                    const city = parts[1].replace(/_/g, ' ');
+                    return `${city}, ${country}`;
+                }
+                return location;
             }
 
             function drawCharts(sortedActivities) {
@@ -540,6 +610,29 @@
                 heartRateChart.update();
                 window.heartRateChart = heartRateChart;
                 buildLegendToggles('heartRateControls', heartRateChart);
+
+                // Location table - count activities by timezone
+                const locationCounts = {};
+                sortedActivities.forEach(a => {
+                    const formattedLocation = formatTimezone(a.timezone);
+                    locationCounts[formattedLocation] = (locationCounts[formattedLocation] || 0) + 1;
+                });
+                
+                // Sort by count (descending)
+                const sortedLocations = Object.entries(locationCounts)
+                    .sort((a, b) => b[1] - a[1]);
+                
+                // Generate table HTML
+                const locationContainer = document.getElementById('locationChart');
+                let tableHTML = '<div class="location-table-title">Ride locations</div>';
+                tableHTML += '<table class="location-table">';
+                tableHTML += '<thead><tr><th>Location</th><th>Activities</th></tr></thead>';
+                tableHTML += '<tbody>';
+                sortedLocations.forEach(([location, count]) => {
+                    tableHTML += `<tr><td>${location}</td><td>${count}</td></tr>`;
+                });
+                tableHTML += '</tbody></table>';
+                locationContainer.innerHTML = tableHTML;
             }
 
             // Helper to render checkbox toggles that control dataset visibility
@@ -613,7 +706,7 @@
             const sections = [
                 'sportControls', 'activitiesChart', 'speedPowerControls',
                 'distanceChart', 'distanceElevationControls',
-                'heartRateChart', 'heartRateControls'
+                'heartRateChart', 'heartRateControls', 'locationChart'
             ];
             sections.forEach(id => {
                 const el = document.getElementById(id);
@@ -627,7 +720,7 @@
             const sections = [
                 'sportControls', 'activitiesChart', 'speedPowerControls',
                 'distanceChart', 'distanceElevationControls',
-                'heartRateChart', 'heartRateControls'
+                'heartRateChart', 'heartRateControls', 'locationChart'
             ];
             sections.forEach(id => {
                 const el = document.getElementById(id);
